@@ -44,10 +44,12 @@ Then compile and execute code.c and the program will resolve the sudoku
 ### Documentation
 
 This program use two method to resolve the sudoku.
+
 The 1rst methode is the logical one, a soduko have proprety to be solve.
+
 Then in a certain case, the sudoku can't be resolve because you need to simulate a number.
-The 2nd method is use in this case : it "brutforce" the sudoku
-(in reality he just brutforce at maximum 2 numbers, but we can change this number of course).
+
+The 2nd method is use in this case : it "brutforce" the sudoku (in reality he just brutforce at maximum 2 numbers, but we can change this number of course).
 
 
 ### Possible issues
