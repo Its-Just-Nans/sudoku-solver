@@ -5,9 +5,6 @@ sudoku-resolver by Its-Just-Nans
 
 
 
-
-
-
 ## ⚠️Your attention plz⚠️
 This is just a program for fun.
 I know it's not optimizing (for exemple using char string instead of int string and convertissor 🤪🤪🤪).
