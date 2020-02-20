@@ -4,6 +4,10 @@ sudoku-resolver by Its-Just-Nans
 ⚠️do not distribute, credit the author⚠️
 
 
+
+
+
+
 ## ⚠️Your attention plz⚠️
 This is just a program for fun.
 I know it's not optimizing (for exemple using char string instead of int string and convertissor 🤪🤪🤪).
@@ -11,6 +15,10 @@ I know it's not optimizing (for exemple using char string instead of int string 
 🇫🇷 Version at the beginnng of the file. [Click Here](https://github.com/Its-Just-Nans/sudoku-resolver/blob/master/README.md#-version)
 
 🇺🇸/🇬🇧 Version at the end of file. [Click Here](https://github.com/Its-Just-Nans/sudoku-resolver/blob/master/README.md#-version-1)
+
+
+
+
 
 ## 🇫🇷 Version
 ### Comment l'utiliser
@@ -29,6 +37,11 @@ Pour utiliser ce programme, vous devez créer un fichier nommé sudoku.txt comme
 ```
 Ce fichier sudoku.txt doit être placer à côté du code compilé
 Maintenant vous pouvez compiler votre code et l'executer, votre sudoku va être résolu dans un nouveau fichier
+
+
+
+
+
 
 ## 🇺🇸/🇬🇧 Version
 ### How to use
