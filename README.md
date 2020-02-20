@@ -4,7 +4,7 @@ sudoku-resolver by Its-Just-Nans
 🇫🇷 Version at the beginnng of the file
 
 🇺🇸/🇬🇧 Version at the end of file
-
+[Here](https://github.com/Its-Just-Nans/sudoku-resolver/blob/master/README.md#-version-1)
 ## 🇫🇷 Version
 ### Comment l'utiliser
 Pour utiliser ce programme, vous devez créer un fichier nommé sudoku.txt comme l'exemple ci-dessous (en remplacant les cases vides par des zéros) :
