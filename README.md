@@ -1,6 +1,29 @@
 # sudoku-resolver
 sudoku-resolver by Its-Just-Nans
 
+🇫🇷 Version at the beginnng of the file
+
+🇺🇸/🇬🇧 Version at the end of file
+
+## 🇫🇷 Version
+### Comment l'utiliser
+Pour utiliser ce programme, vous devez créer un fichier nommé sudoku.txt comme l'exemple ci-dessous (en remplacant les cases vides par des zéros) :
+
+```
+5 0 0 0 0 0 0 9 4
+0 0 9 0 0 0 0 5 0
+0 4 0 0 0 0 2 0 0
+0 2 0 5 0 0 8 0 0
+0 0 4 0 0 1 0 7 0
+8 0 0 0 3 0 0 0 6
+0 0 2 0 0 7 0 1 0
+0 3 0 9 0 0 0 0 0
+6 0 0 0 4 0 0 0 8
+```
+Ce fichier sudoku.txt doit être placer à côté du code compilé
+Maintenant vous pouvez compiler votre code et l'executer, votre sudoku va être résolu dans un nouveau fichier
+
+## 🇺🇸/🇬🇧 Version
 ### How to use
 To use this program you need to create a text file with the sudoku (with 0 when there aren't number) named sudoku.txt
 like this :
