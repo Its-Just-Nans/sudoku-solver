@@ -9,15 +9,15 @@ sudoku-resolver by Its-Just-Nans
 This is just a program for fun.
 I know it's not optimizing (for exemple using char string instead of int string and convertissor 🤪🤪🤪).
 
-🇫🇷 Version at the beginnng of the file. [Click Here](https://github.com/Its-Just-Nans/sudoku-resolver/blob/master/README.md#-version)
+🇫🇷 version at the beginnng of the file. [Click Here](https://github.com/Its-Just-Nans/sudoku-resolver/blob/master/README.md#-version)
 
-🇺🇸/🇬🇧 Version at the end of file. [Click Here](https://github.com/Its-Just-Nans/sudoku-resolver/blob/master/README.md#-version-1)
-
-
+🇺🇸/🇬🇧 version at the end of file. [Click Here](https://github.com/Its-Just-Nans/sudoku-resolver/blob/master/README.md#-version-1)
 
 
 
-## 🇫🇷 Version
+
+
+## 🇫🇷 version
 ### Comment l'utiliser
 Pour utiliser ce programme, vous devez créer un fichier nommé sudoku.txt comme l'exemple ci-dessous (en remplacant les cases vides par des zéros) :
 
@@ -40,7 +40,7 @@ Maintenant vous pouvez compiler votre code et l'executer, votre sudoku va être 
 
 
 
-## 🇺🇸/🇬🇧 Version
+## 🇺🇸/🇬🇧 version
 ### How to use
 To use this program you need to create a text file with the sudoku (with 0 when there aren't number) named sudoku.txt
 like this :
