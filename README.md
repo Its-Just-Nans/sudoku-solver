@@ -19,7 +19,7 @@ I know it's not optimizing (for exemple using char string instead of int string 
 
 ## 🇫🇷 version
 ### Comment l'utiliser
-Pour utiliser ce programme, vous devez créer un fichier nommé sudoku.txt comme l'exemple ci-dessous (en remplacant les cases vides par des zéros) :
+Pour utiliser ce programme, vous devez créer un fichier nommé sudoku1.txt comme l'exemple ci-dessous (en remplacant les cases vides par des zéros) :
 
 ```
 5 0 0 0 0 0 0 9 4
@@ -32,7 +32,7 @@ Pour utiliser ce programme, vous devez créer un fichier nommé sudoku.txt comme
 0 3 0 9 0 0 0 0 0
 6 0 0 0 4 0 0 0 8
 ```
-Ce fichier sudoku.txt doit être placer à côté du code compilé
+Ce fichier sudoku1.txt doit être placer à côté du code compilé
 Maintenant vous pouvez compiler votre code et l'executer, votre sudoku va être résolu dans un nouveau fichier
 
 
