@@ -4,7 +4,7 @@
 
 HELP
 
-This program is a creation of Nans (one of his first programs)
+This program is a creation of n4n5 (one of his first programs)
 
 To used this program you need to create a text file with the sudoku (with 0 when there aren't number) named sudoku.txt
 
