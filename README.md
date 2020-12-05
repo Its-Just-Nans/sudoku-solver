@@ -1,7 +1,7 @@
 # sudoku-resolver
 
 This is just a program for fun.
-I know it's not optimizing (for exemple using char string instead of int string and convertissor 🤪🤪🤪).
+I know it's not optimized.
 
 I think I am going to re-build it later/soon :)
 
