@@ -42,20 +42,20 @@ void readFile(uint8_t sudoku[9][9][9], uint8_t* nameOfFile, char* vSeparator, ch
 }
 
 void afficheurSudoku(uint8_t sudoku[9][9][9], char* vSeparator, char* hSeparator){
-    printf("\nThe sudoku :\n");
+    printf("The sudoku :\n");
 	for(int counterL = 0; counterL < 9; counterL++){
 		for(int counterC = 0; counterC < 9; counterC++){
 			printf("%c", sudoku[counterL][counterC][1]);
             if(counterC != 8){
                 printf(" ");
             }
-			if(counterC == 2 || counterC == 5){
+			if(vSeparator != "" && (counterC == 2 || counterC == 5)){
                 printf(vSeparator);
                 printf(" ");
             }
 		}
 		printf("\n");
-		if(counterL == 2 || counterL == 5){
+		if(hSeparator != "" && (counterL == 2 || counterL == 5)){
             for(int f=0; f<21; f++){
                 printf(hSeparator);
             }

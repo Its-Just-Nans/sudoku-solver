@@ -12,7 +12,8 @@
                 "-sh",
                 "=",
                 "-o",
-                "cotcot.txt"
+                "cotcot.txt",
+                "sudoku.txt"
             ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
