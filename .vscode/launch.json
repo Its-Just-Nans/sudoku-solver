@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "(Windows) Lancer",
+            "name": "Run",
             "type": "cppvsdbg",
             "request": "launch",
             "program": "${workspaceFolder}/sudoku.exe",
@@ -21,7 +21,7 @@
             "externalConsole": false
         },
         {
-            "name": "(gdb) Lancer",
+            "name": "Build & Run & Debug",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/sudoku.exe",
@@ -33,6 +33,18 @@
             "MIMode": "gdb",
             "miDebuggerPath": "c:/mingw/bin/gdb.exe",
             "preLaunchTask": "compile"
-        }
+        },
+        {
+            "name": "Build & Run actual file",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/actualFile.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "compileFile"
+        },
     ]
 }
