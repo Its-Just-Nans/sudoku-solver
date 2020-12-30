@@ -4,8 +4,8 @@ uint8_t main(int argc, char *argv[]){
     char *outputName = "sudokuValid.txt";
     char *verticalSeparator = "|";
     char *horizontalSeparator = "=";
-    char *nameOfFile = "sudoku.txt";
-    for(int o=1; o<argc; o++){
+    char *nameOfFile = "sudoku2.txt";
+    for(uint8_t o=1; o<argc; o++){
         if(argv[o][0] == '-'){
             if(argv[o][1] == 'o'){
                 o++;
@@ -29,7 +29,7 @@ uint8_t main(int argc, char *argv[]){
     printf("horizontalSeparator -> '%s'\n", horizontalSeparator);
     printf("Entry file -> '%s'\n", nameOfFile);
     printf("-------------------\n");
-    uint8_t sudoku[9][9][9];
+    uint16_t sudoku[9][9][1];
     readFile(sudoku, nameOfFile, verticalSeparator, horizontalSeparator);
     afficheurSudoku(sudoku, verticalSeparator, horizontalSeparator);
     return 0;
