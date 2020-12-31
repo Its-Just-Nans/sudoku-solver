@@ -20,12 +20,20 @@ for(uint8_t c = 0; c <= 255; c++){
 }
 */
 
+void printByte2(uint8_t* byte){
+    for(uint8_t count = 0; count < 8; count ++){
+        uint8_t temp = (*byte)<<(count);
+        printf("%d ", temp>>7);
+    }
+    printf("\n");
+}
 
 void printByte(uint16_t* byte){
     for(uint8_t count = 0; count < 16; count ++){
         uint16_t temp = (*byte)<<(count);
         printf("%d ", temp>>15);
     }
+    printf("\n");
 }
 
 uint8_t getSmallNumber(uint16_t* byte, uint8_t number){
@@ -103,7 +111,7 @@ void readFile(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, char* vSeparator, c
     if(FileSudoku != NULL){
         for(uint8_t count = 0; count < 9; count++){
 			for(uint8_t f = 0; f < 9; f++){
-                fscanf(FileSudoku, "%c", &temp);
+                fscanf(FileSudoku, "%hu", &temp);
                 setNumber(&sudoku[count][f][0], temp);
                 if(f != 8){
                     fscanf(FileSudoku, " ", &trash);
@@ -157,16 +165,24 @@ void afficheurSudoku(uint16_t sudoku[9][9][1], char* vSeparator, char* hSeparato
 
 
 
-uint8_t* getColumn(uint8_t sudoku[9][9][9], uint8_t* nameOfFile, uint8_t* option, uint8_t nbColumn, uint8_t* buffer){
-    if(option){
+void getColumn(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, uint8_t* option, uint8_t nbColumn, uint8_t* buffer){
+    if((*option)){
         for(uint8_t count = 0; count < 9 ; count++){
-            buffer[count] = sudoku[9][9][count];
+            buffer[count] = getNumber(&sudoku[count][(nbColumn-1)][0]);
+            printf("%d %d", buffer[count], getNumber(&sudoku[count][(nbColumn-1)][0]));
         }
+        printf("\nsu printed\n");
     }else{
-
+        printf("TODO readColumnFromFile\n");
     }
 }
 
-void getRow(){
-
+void getRow(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, uint8_t* option, uint8_t nbRow, uint8_t* buffer){
+    if((*option)){
+        for(uint8_t count = 0; count < 9 ; count++){
+            buffer[count] = getNumber(&sudoku[(nbRow-1)][count][0]);
+        }
+    }else{
+        printf("TODO readRowFromFile\n");
+    }
 }
