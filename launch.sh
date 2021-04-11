@@ -6,7 +6,7 @@ if [[ "$OSTYPE" == "msys"* ]]; then
 else
     nameOfCompiled="sudoku.out"
 fi
-returnVal=$(gcc -Werror -o "${linkToFoler}${nameOfCompiled}" -g "${linkToFoler}main.c" "${linkToFoler}function.c" 2>&1)
+returnVal=$(gcc -Werror -Wall -o "${linkToFoler}${nameOfCompiled}" -g "${linkToFoler}main.c" "${linkToFoler}function.c" 2>&1)
 long=$(echo "$returnVal" | wc -c)
 if [ "$long" = "1" ]; then
     echo "Compiling finished"
