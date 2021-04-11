@@ -1,0 +1,42 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "type": "shell",
+        "label": "compile",
+        "command": "gcc",
+        "args": [
+          "-o",
+          "'${workspaceFolder}\\sudoku.exe'",
+          "-g",
+          "'${workspaceFolder}\\main.c'",
+          "'${workspaceFolder}\\function.c'"
+        ],
+        "problemMatcher": [
+          "$msCompile"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "type": "shell",
+        "label": "compileFile",
+        "command": "gcc",
+        "args": [
+          "-o",
+          "'${workspaceFolder}\\actualFile.exe'",
+          "-g",
+          "'${workspaceFolder}\\${fileBasename}'"
+        ],
+        "problemMatcher": [
+          "$msCompile"
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      }
+    ]
+  }

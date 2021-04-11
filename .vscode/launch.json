@@ -1,0 +1,50 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/sudoku.exe",
+            "args": [
+                "-sv",
+                "|",
+                "-sh",
+                "=",
+                "-o",
+                "cotcot.txt",
+                "sudoku.txt"
+            ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false
+        },
+        {
+            "name": "Build & Run & Debug",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/sudoku.exe",
+            "args": ["sudoku.txt"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "c:/mingw/bin/gdb.exe",
+            "preLaunchTask": "compile"
+        },
+        {
+            "name": "Build & Run actual file",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/actualFile.exe",
+            "args": ["sudoku.txt"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "preLaunchTask": "compileFile"
+        },
+    ]
+}
