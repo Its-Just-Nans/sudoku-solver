@@ -1,10 +1,10 @@
 #include "sudoku.h"
 
-uint8_t main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
     char *outputName = "sudokuValid.txt";
     char *verticalSeparator = "|";
     char *horizontalSeparator = "=";
-    unsigned char *nameOfFile = "sudoku.txt";
+    char *nameOfFile = "sudoku.txt";
     uint8_t memoryUse = 1;
     for(uint8_t count = 1; count < argc; count++) {
         if(argv[count][0] == '-') {
@@ -52,10 +52,10 @@ uint8_t main(int argc, char *argv[]) {
     }
     printf("-------------------\n");
     //afficheurSudoku(sudoku, verticalSeparator, horizontalSeparator);
+    uint8_t buffer[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
     if(memoryUse) {
         readFile(sudoku, nameOfFile, verticalSeparator, horizontalSeparator);
         afficheurSudoku(sudoku, verticalSeparator, horizontalSeparator);
-        uint8_t buffer[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
         getSquare(sudoku, 1, buffer);
         printBuffer(buffer);
         getRow(sudoku, 1, buffer);
@@ -64,6 +64,8 @@ uint8_t main(int argc, char *argv[]) {
         printBuffer(buffer);
     } else {
         printf("TODO\n");
+        //getColumnFROMFILE(nameOfFile, 1, buffer);
+        printBuffer(buffer);
     }
     return 0;
 }

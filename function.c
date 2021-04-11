@@ -58,7 +58,7 @@ uint8_t getNumber(uint16_t* byte) {
     return temp;  //it is a uint16_t but it is casted to a uint8_t because we return a uint8_t
 }
 
-void readFile(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, char* vSeparator, char* hSeparator) {
+void readFile(uint16_t sudoku[9][9][1], char* nameOfFile, char* vSeparator, char* hSeparator) {
     char trash;
     FILE* FileSudoku;
     uint8_t temp;
@@ -66,22 +66,22 @@ void readFile(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, char* vSeparator, c
     if(FileSudoku != NULL) {
         for(uint8_t count = 0; count < 9; count++) {
             for(uint8_t f = 0; f < 9; f++) {
-                fscanf(FileSudoku, "%hu", &temp);
+                fscanf(FileSudoku, "%c", &temp);
                 setNumber(&sudoku[count][f][0], temp);
                 if(f != 8) {
-                    fscanf(FileSudoku, " ", &trash);
+                    fscanf(FileSudoku, " ");
                 }
-                if(vSeparator != "" && (f == 2 || f == 5)) {
+                if(vSeparator != NULL && (f == 2 || f == 5)) {
                     fscanf(FileSudoku, vSeparator, &trash);
-                    fscanf(FileSudoku, " ", &trash);
+                    fscanf(FileSudoku, " ");
                 }
             }
-            fscanf(FileSudoku, "\n", &trash);
-            if(hSeparator != "" && (count == 2 || count == 5)) {
+            fscanf(FileSudoku, "\n");
+            if(hSeparator != NULL && (count == 2 || count == 5)) {
                 for(uint8_t f = 0; f < 21; f++) {
                     fscanf(FileSudoku, hSeparator, &trash);
                 }
-                fscanf(FileSudoku, "\n", &trash);
+                fscanf(FileSudoku, "\n");
             }
         }
     } else {
@@ -99,13 +99,13 @@ void afficheurSudoku(uint16_t sudoku[9][9][1], char* vSeparator, char* hSeparato
             if(counterC != 8) {
                 printf(" ");
             }
-            if(vSeparator != "" && (counterC == 2 || counterC == 5)) {
+            if(vSeparator != NULL && (counterC == 2 || counterC == 5)) {
                 printf(vSeparator);
                 printf(" ");
             }
         }
         printf("\n");
-        if(hSeparator != "" && (counterL == 2 || counterL == 5)) {
+        if(hSeparator != NULL && (counterL == 2 || counterL == 5)) {
             for(uint8_t f = 0; f < 21; f++) {
                 printf(hSeparator);
             }
