@@ -44,10 +44,6 @@ uint8_t main(int argc, char *argv[]) {
     afficheurSudoku(sudoku, verticalSeparator, horizontalSeparator);
     uint8_t option = 1;
     uint8_t buffer[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-    getRow(sudoku, nameOfFile, &option, 1, buffer);
-    for(uint8_t count = 0; count < 9; count++) {
-        printf("%d ", buffer[count]);
-    }
-    printf("\nbuffer printed\n");
+    printf("\n");
     return 0;
 }
