@@ -1,25 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/*
-uint8_t leftByte(uint8_t* byte){
-    return (*byte)>>4;
-}
-
-uint8_t rightByte(uint8_t* byte){
-    uint8_t temp = (*byte)<<4;
-    return temp>>4;
-                                                        //((*byte)<<4)>>4; don't work (compiler optimization ?)
-}
-
-for(uint8_t c = 0; c <= 255; c++){
-    printf("%d -> %d || %d\n", c, rightByte(&c), rightByte2(&c));
-    if(c == 255){
-        break;
-    }
-}
-*/
-
 void printByte2(uint8_t* byte) {
     for(uint8_t count = 0; count < 8; count++) {
         uint8_t temp = (*byte) << (count);
@@ -77,33 +58,6 @@ uint8_t getNumber(uint16_t* byte) {
     return temp;  //it is a uint16_t but it is casted to a uint8_t because we return a uint8_t
 }
 
-/*
-printByte(&temp);printf(" => byte\n");
-for(int c = 1; c<10; c++){
-    setSmallNumber(&temp, c, 1);
-    printByte(&temp);printf(" => temp after set small number %d 1\n", c);
-    setNumber(&temp, c);
-    printByte(&temp);printf(" => temp after set number\n");
-    setSmallNumber(&temp, c, 0);
-    printByte(&temp);printf(" => temp after set small number %d 0\n", c);
-    printf("%d\n\n", getNumber(&temp));
-}
-
-printByte(&temp);printf(" => base\n");
-for(int d = 1; d< 10; d++){
-    printf("----------------------------------\n");
-    printByte(&temp);printf(" => temp\n");
-    printByte(&temp);printf(" => temp before set small\n");
-    printf("%d => %d\n", d,getSmallNumber(&temp, d));
-    setSmallNumber(&temp, d, 1);
-    printByte(&temp);printf(" => temp after put 1\n");
-    printf("%d => %d\n", d,getSmallNumber(&temp, d));
-    setSmallNumber(&temp, d, 0);
-    printByte(&temp);printf(" => temp after put 0\n");
-    printf("%d => %d\n", d, getSmallNumber(&temp, d));
-}
-*/
-
 void readFile(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, char* vSeparator, char* hSeparator) {
     char trash;
     FILE* FileSudoku;
@@ -131,13 +85,12 @@ void readFile(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, char* vSeparator, c
             }
         }
     } else {
-        printf("Error during file openning");
+        printf("Error during file openning\n");
     }
     fclose(FileSudoku);
 }
 
 void afficheurSudoku(uint16_t sudoku[9][9][1], char* vSeparator, char* hSeparator) {
-    printf("The sudoku :\n");
     uint8_t temp;
     for(uint8_t counterL = 0; counterL < 9; counterL++) {
         for(uint8_t counterC = 0; counterC < 9; counterC++) {
@@ -162,23 +115,15 @@ void afficheurSudoku(uint16_t sudoku[9][9][1], char* vSeparator, char* hSeparato
     printf("\n");
 }
 
-void getColumn(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, uint8_t* option, uint8_t nbColumn, uint8_t* buffer) {
-    if((*option)) {
-        for(uint8_t count = 0; count < 9; count++) {
-            buffer[count] = getNumber(&sudoku[count][(nbColumn - 1)][0]);
-        }
-    } else {
-        printf("TODO readColumnFromFile\n");
+void getColumn(uint16_t sudoku[9][9][1], uint8_t nbColumn, uint8_t* buffer) {
+    for(uint8_t count = 0; count < 9; count++) {
+        buffer[count] = getNumber(&sudoku[count][(nbColumn - 1)][0]);
     }
 }
 
-void getRow(uint16_t sudoku[9][9][1], uint8_t* nameOfFile, uint8_t* option, uint8_t nbRow, uint8_t* buffer) {
-    if((*option)) {
-        for(uint8_t count = 0; count < 9; count++) {
-            buffer[count] = getNumber(&sudoku[(nbRow - 1)][count][0]);
-        }
-    } else {
-        printf("TODO readRowFromFile\n");
+void getRow(uint16_t sudoku[9][9][1], uint8_t nbRow, uint8_t* buffer) {
+    for(uint8_t count = 0; count < 9; count++) {
+        buffer[count] = getNumber(&sudoku[(nbRow - 1)][count][0]);
     }
 }
 
@@ -192,10 +137,8 @@ uint8_t isNumberInBuffer(uint8_t* buffer, uint8_t number) {
 }
 
 void setSmallNumberOfColumn(uint16_t sudoku[9][9][1], uint8_t numberOfColumn, uint8_t* buffer) {
-    char* nameOfFile = "none";
-    uint8_t option = 1;
     uint8_t temp = 1;
-    getColumn(sudoku, nameOfFile, &option, numberOfColumn, buffer);
+    getColumn(sudoku, numberOfColumn, buffer);
     for(uint8_t number = 1; number < 10; number++) {
         if(!isNumberInBuffer(buffer, number)) {
             for(uint8_t count = 0; count < 9; count++) {
@@ -204,19 +147,41 @@ void setSmallNumberOfColumn(uint16_t sudoku[9][9][1], uint8_t numberOfColumn, ui
         }
     }
 }
-/*
 
-getColumn(sudoku, nameOfFile, &option, 1, buffer);
-for(uint8_t count = 0; count < 9; count++) {
-    printf("%d ", buffer[count]);
+void getSquare(uint16_t sudoku[9][9][1], uint8_t nbSquare, uint8_t* buffer) {
+    uint8_t startLine = 0;
+    if(nbSquare == 1 || nbSquare == 2 || nbSquare == 3) {
+        startLine = 0;
+        // it's default, so this test is useless
+    } else if(nbSquare == 4 || nbSquare == 5 || nbSquare == 6) {
+        startLine = 3;
+    } else if(nbSquare == 7 || nbSquare == 8 || nbSquare == 9) {
+        startLine = 6;
+    }
+    uint8_t startColumn = 0;
+    if(nbSquare == 1 || nbSquare == 4 || nbSquare == 7) {
+        startColumn = 0;
+        // it's default, so this test is useless
+    } else if(nbSquare == 2 || nbSquare == 5 || nbSquare == 8) {
+        startColumn = 3;
+    } else if(nbSquare == 3 || nbSquare == 6 || nbSquare == 9) {
+        startColumn = 6;
+    }
+    for(uint8_t count = 0; count < 9; count++) {
+        if(count == 0 || count == 3 || count == 6) {
+            buffer[count] = getNumber(&sudoku[startLine][startColumn][0]);
+        } else if(count == 1 || count == 4 || count == 7) {
+            buffer[count] = getNumber(&sudoku[startLine][startColumn + 1][0]);
+        } else if(count == 2 || count == 5 || count == 8) {
+            buffer[count] = getNumber(&sudoku[startLine][startColumn + 2][0]);
+            startLine++;
+        }
+    }
 }
 
-getRow(sudoku, nameOfFile, &option, 1, buffer);
-for(uint8_t count = 0; count < 9; count++) {
-    printf("%d ", buffer[count]);
+void printBuffer(uint8_t* buffer) {
+    for(uint8_t count = 0; count < 9; count++) {
+        printf("%d ", buffer[count]);
+    }
+    printf("\n");
 }
-
-for(uint8_t count = 1; count < 10; count++) {
-    printf("is %d ? %d\n", count, isNumberInBuffer(buffer, count));
-}
-*/
