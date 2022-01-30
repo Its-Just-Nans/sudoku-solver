@@ -1,29 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
 #include "sudoku.h"
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     char *outputName = "sudokuValid.txt";
     char *verticalSeparator = "|";
     char *horizontalSeparator = "=";
     char *nameOfFile = "sudoku.txt";
     uint8_t memoryUse = 1;
-    for(uint8_t count = 1; count < argc; count++) {
-        if(argv[count][0] == '-') {
-            if(argv[count][1] == 'o') {
+    for (uint8_t count = 1; count < argc; count++)
+    {
+        if (argv[count][0] == '-')
+        {
+            if (argv[count][1] == 'o')
+            {
                 count++;
                 outputName = argv[count];
-            } else if(argv[count][1] == 'm') {
+            }
+            else if (argv[count][1] == 'm')
+            {
                 count++;
                 memoryUse = 0;
-            } else if(argv[count][1] == 's') {
-                if(argv[count][2] == 'v') {
+            }
+            else if (argv[count][1] == 's')
+            {
+                if (argv[count][2] == 'v')
+                {
                     count++;
                     verticalSeparator = argv[count];
-                } else if(argv[count][2] == 'h') {
+                }
+                else if (argv[count][2] == 'h')
+                {
                     count++;
                     horizontalSeparator = argv[count];
                 }
             }
-        } else {
+        }
+        else
+        {
             nameOfFile = argv[count];
         }
     }
@@ -34,7 +50,8 @@ int main(int argc, char *argv[]) {
     printf("horizontalSeparator -> '%s'\n", horizontalSeparator);
     printf("Entry file -> '%s'\n", nameOfFile);
     printf("Memory usage -> ");
-    if(memoryUse) {
+    if (memoryUse)
+    {
         printf("on\n");
         uint16_t sudokuVariable[9][9][1] = {{{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
                                             {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
@@ -46,14 +63,16 @@ int main(int argc, char *argv[]) {
                                             {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
                                             {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}}};
         sudoku = &sudokuVariable;
-        printf("Sudoku size : %d bytes or %d bits\n", sizeof(*sudoku), sizeof(*sudoku) * 8);
-    } else {
+        printf("Sudoku size : %d bytes or %d bits\n", (int)sizeof(*sudoku), (int)sizeof(*sudoku) * 8);
+    }
+    else
+    {
         printf("limited\n");
     }
     printf("-------------------\n");
-    //afficheurSudoku(sudoku, verticalSeparator, horizontalSeparator);
     uint8_t buffer[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
-    if(memoryUse) {
+    if (memoryUse)
+    {
         readFile(sudoku, nameOfFile, verticalSeparator, horizontalSeparator);
         afficheurSudoku(sudoku, verticalSeparator, horizontalSeparator);
         getSquare(sudoku, 1, buffer);
@@ -62,9 +81,14 @@ int main(int argc, char *argv[]) {
         printBuffer(buffer);
         getColumn(sudoku, 1, buffer);
         printBuffer(buffer);
-    } else {
-        printf("TODO\n");
-        //getColumnFROMFILE(nameOfFile, 1, buffer);
+    }
+    else
+    {
+        getSquareFROMFILE(nameOfFile, verticalSeparator, horizontalSeparator, 1, buffer);
+        printBuffer(buffer);
+        getSquareFROMFILE(nameOfFile, verticalSeparator, horizontalSeparator, 9, buffer);
+        printBuffer(buffer);
+        getSquareFROMFILE(nameOfFile, verticalSeparator, horizontalSeparator, 4, buffer);
         printBuffer(buffer);
     }
     return 0;
