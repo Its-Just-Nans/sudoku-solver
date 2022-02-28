@@ -38,8 +38,8 @@ void setSmallNumber(uint16_t *byte, uint8_t number, uint8_t state)
     uint16_t lastPart = smallNumber << (7 + number);
     lastPart = lastPart >> (7 + number);
     // printByte(&firstPart);printf(" => firstPart\n");
-    printByte(&lastPart);
-    printf(" => lastPart\n");
+    // printByte(&lastPart);
+    // printf(" => lastPart\n");
     firstPart = firstPart << 1;
     // printByte(&firstPart);printf(" => firstPart after shifting\n");
     firstPart = firstPart + state;
@@ -67,6 +67,24 @@ uint8_t getNumber(uint16_t *byte)
     return temp; // it is a uint16_t but it is casted to a uint8_t because we return a uint8_t
 }
 
+uint8_t isNumber(uint16_t *byte)
+{
+    uint8_t temp = getNumber(byte);
+    if (temp > 0 && temp < 10)
+    {
+        return 1;
+    }
+    return 0;
+}
+
+void setAllSmallNumberToZero(uint16_t *byte)
+{
+    for (uint8_t c = 1; c < 10; c++)
+    {
+        setSmallNumber(byte, c, 0);
+    }
+}
+
 void readFile(uint16_t sudoku[9][9][1], char const *nameOfFile, char const *vSeparator, char const *hSeparator)
 {
     char trash;
@@ -81,6 +99,13 @@ void readFile(uint16_t sudoku[9][9][1], char const *nameOfFile, char const *vSep
             {
                 fscanf(FileSudoku, "%hhd", &temp);
                 setNumber(&sudoku[count][f][0], temp);
+                if (isNumber(&sudoku[count][f][0]))
+                {
+#ifdef DEBUG
+                    printf("      [%d][%d] = %d\n", count, f, getNumber(&sudoku[count][f][0]));
+#endif
+                    setAllSmallNumberToZero(&sudoku[count][f][0]);
+                }
                 if (f != 8)
                 {
                     fscanf(FileSudoku, " ");
@@ -330,6 +355,25 @@ void afficheurSudoku(uint16_t sudoku[9][9][1], char const *vSeparator, char cons
     printf("\n");
 }
 
+void afficheurFullSudoku(uint16_t sudoku[9][9][1])
+{
+    uint8_t temp;
+    for (uint8_t counterL = 0; counterL < 9; counterL++)
+    {
+        for (uint8_t counterC = 0; counterC < 9; counterC++)
+        {
+            printf("[%d][%d] = ", counterL, counterC);
+            for (uint8_t countSmallNumber = 1; countSmallNumber < 10; countSmallNumber++)
+            {
+                temp = getSmallNumber(&sudoku[counterL][counterC][0], countSmallNumber);
+                printf("%hhd ", temp);
+            }
+            printf("\n");
+        }
+    }
+    printf("\n");
+}
+
 void getColumn(uint16_t sudoku[9][9][1], uint8_t nbColumn, uint8_t *buffer)
 {
     for (uint8_t count = 0; count < 9; count++)
@@ -360,15 +404,42 @@ uint8_t isNumberInBuffer(uint8_t *buffer, uint8_t number)
 
 void setSmallNumberOfColumn(uint16_t sudoku[9][9][1], uint8_t numberOfColumn, uint8_t *buffer)
 {
-    uint8_t temp = 1;
     getColumn(sudoku, numberOfColumn, buffer);
     for (uint8_t number = 1; number < 10; number++)
     {
-        if (!isNumberInBuffer(buffer, number))
+        if (isNumberInBuffer(buffer, number))
         {
             for (uint8_t count = 0; count < 9; count++)
             {
-                setSmallNumber(&sudoku[count][(numberOfColumn + 1)][0], number, temp);
+                if (!isNumber(&sudoku[count][(numberOfColumn - 1)][0]))
+                {
+                    setSmallNumber(&sudoku[count][(numberOfColumn - 1)][0], number, 0);
+                }
+            }
+        }
+        // else
+        // {
+        //     for (uint8_t count = 0; count < 9; count++)
+        //     {
+        //         setSmallNumber(&sudoku[count][(numberOfColumn - 1)][0], number, 1);
+        //     }
+        // }
+    }
+}
+
+void setSmallNumberOfRow(uint16_t sudoku[9][9][1], uint8_t numberOfRow, uint8_t *buffer)
+{
+    getRow(sudoku, numberOfRow, buffer);
+    for (uint8_t number = 1; number < 10; number++)
+    {
+        if (isNumberInBuffer(buffer, number))
+        {
+            for (uint8_t count = 0; count < 9; count++)
+            {
+                if (!isNumber(&sudoku[(numberOfRow - 1)][count][0]))
+                {
+                    setSmallNumber(&sudoku[(numberOfRow - 1)][count][0], number, 0);
+                }
             }
         }
     }
@@ -418,6 +489,71 @@ void getSquare(uint16_t sudoku[9][9][1], uint8_t nbSquare, uint8_t *buffer)
         {
             buffer[count] = getNumber(&sudoku[startLine][startColumn + 2][0]);
             startLine++;
+        }
+    }
+}
+
+void setSmallNumberOfSquare(uint16_t sudoku[9][9][1], uint8_t nbSquare, uint8_t *buffer)
+{
+    getSquare(sudoku, nbSquare, buffer);
+    uint8_t startLine = 0;
+    if (nbSquare == 1 || nbSquare == 2 || nbSquare == 3)
+    {
+        startLine = 0;
+        // it's default, so this test is useless
+    }
+    else if (nbSquare == 4 || nbSquare == 5 || nbSquare == 6)
+    {
+        startLine = 3;
+    }
+    else if (nbSquare == 7 || nbSquare == 8 || nbSquare == 9)
+    {
+        startLine = 6;
+    }
+    uint8_t startColumn = 0;
+    if (nbSquare == 1 || nbSquare == 4 || nbSquare == 7)
+    {
+        startColumn = 0;
+        // it's default, so this test is useless
+    }
+    else if (nbSquare == 2 || nbSquare == 5 || nbSquare == 8)
+    {
+        startColumn = 3;
+    }
+    else if (nbSquare == 3 || nbSquare == 6 || nbSquare == 9)
+    {
+        startColumn = 6;
+    }
+    for (uint8_t number = 1; number < 10; number++)
+    {
+        uint8_t startTemp = startLine;
+        if (isNumberInBuffer(buffer, number))
+        {
+            for (uint8_t count = 0; count < 9; count++)
+            {
+                if (count == 0 || count == 3 || count == 6)
+                {
+                    if (!isNumber(&sudoku[startTemp][startColumn][0]))
+                    {
+                        setSmallNumber(&sudoku[startTemp][startColumn][0], number, 0);
+                    }
+                }
+                else if (count == 1 || count == 4 || count == 7)
+                {
+                    if (!isNumber(&sudoku[startTemp][startColumn + 1][0]))
+                    {
+                        setSmallNumber(&sudoku[startTemp][startColumn + 1][0], number, 0);
+                    }
+                }
+                else if (count == 2 || count == 5 || count == 8)
+                {
+                    if (!isNumber(&sudoku[startTemp][startColumn + 2][0]))
+                    {
+                        setSmallNumber(&sudoku[startTemp][startColumn + 2][0], number, 0);
+                    }
+                    startTemp++;
+                }
+            }
         }
     }
 }

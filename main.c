@@ -53,15 +53,14 @@ int main(int argc, char *argv[])
     if (memoryUse)
     {
         printf("on\n");
-        uint16_t sudokuVariable[9][9][1] = {{{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
-                                            {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
-                                            {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
-                                            {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
-                                            {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
-                                            {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
-                                            {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
-                                            {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}},
-                                            {{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}}};
+        uint16_t sudokuVariable[9][9][1];
+        for (uint8_t count1 = 0; count1 < 9; count1++)
+        {
+            for (uint8_t count2 = 0; count2 < 9; count2++)
+            {
+                sudokuVariable[count1][count2][0] = (uint16_t)0b1111111111111111;
+            }
+        }
         sudoku = &sudokuVariable;
         printf("Sudoku size : %d bytes or %d bits\n", (int)sizeof(*sudoku), (int)sizeof(*sudoku) * 8);
     }
@@ -75,12 +74,18 @@ int main(int argc, char *argv[])
     {
         readFile(sudoku, nameOfFile, verticalSeparator, horizontalSeparator);
         afficheurSudoku(sudoku, verticalSeparator, horizontalSeparator);
-        getSquare(sudoku, 1, buffer);
-        printBuffer(buffer);
-        getRow(sudoku, 1, buffer);
-        printBuffer(buffer);
-        getColumn(sudoku, 1, buffer);
-        printBuffer(buffer);
+#ifdef DEBUG
+        afficheurFullSudoku(sudoku, verticalSeparator, horizontalSeparator);
+#endif
+        for (uint8_t count = 1; count < 10; count++)
+        {
+            setSmallNumberOfColumn(sudoku, count, buffer);
+            setSmallNumberOfRow(sudoku, count, buffer);
+            setSmallNumberOfSquare(sudoku, count, buffer);
+        }
+#ifdef DEBUG
+        afficheurFullSudoku(sudoku, verticalSeparator, horizontalSeparator);
+#endif
     }
     else
     {
