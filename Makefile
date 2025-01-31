@@ -1,6 +1,6 @@
 OUTPUT_NAME= main.out
-CFLAGS= -Wall -Werror
-CFLAGS_DEBUG= $(CFLAGS) -DDEBUG
+CFLAGS= -Wall
+CFLAGS_DEBUG= $(CFLAGS) -DDEBUG -DVERBOSE -fstack-usage
 FILES= main.c function.c
 
 all: compile run

@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#ifndef VERBOSE
+#define printf(...) ;
+#endif
 #include "sudoku.h"
 
 int main(int argc, char *argv[])
@@ -43,7 +46,7 @@ int main(int argc, char *argv[])
             nameOfFile = argv[count];
         }
     }
-    uint16_t(*sudoku)[9][9][1];
+    uint16_t(*sudoku)[9][9];
     printf("-------Options-----\n");
     printf("outputName -> '%s'\n", outputName);
     printf("verticalSeparator -> '%s'\n", verticalSeparator);
@@ -52,13 +55,12 @@ int main(int argc, char *argv[])
     printf("Memory usage -> ");
     if (memoryUse)
     {
-        printf("on\n");
-        uint16_t sudokuVariable[9][9][1];
+        uint16_t sudokuVariable[9][9];
         for (uint8_t count1 = 0; count1 < 9; count1++)
         {
             for (uint8_t count2 = 0; count2 < 9; count2++)
             {
-                sudokuVariable[count1][count2][0] = (uint16_t)0b1111111111111111;
+                sudokuVariable[count1][count2] = (uint16_t)0b0000000000000000;
             }
         }
         sudoku = &sudokuVariable;
@@ -70,6 +72,10 @@ int main(int argc, char *argv[])
     }
     printf("-------------------\n");
     uint8_t buffer[9] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    if (checkFile(nameOfFile))
+    {
+        exit(1);
+    }
     if (memoryUse)
     {
         readFile(sudoku, nameOfFile, verticalSeparator, horizontalSeparator);
