@@ -1,13 +1,9 @@
+#include "../sudoku.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef VERBOSE
-#define printf(...) ;
-#endif
-#include "sudoku.h"
 
-int main() {
-  // Sample Sudoku puzzle (0 represents empty cells)
+int test_csv() {
   int board[N][N] = {{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
                      {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
                      {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -21,8 +17,7 @@ int main() {
       {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
       {0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
-  // parse the CSV file
-  const char *filename = "./tests/sudoku.csv";
+  const char *filename = "sudoku.csv";
 
   FILE *file = fopen(filename, "r");
 
@@ -31,7 +26,7 @@ int main() {
     return -1;
   }
 
-  { // read first line of file
+  {
     char line[1024];
     if (fgets(line, sizeof(line), file) == NULL) {
       printf("Could not read first line \n");
@@ -39,9 +34,10 @@ int main() {
     }
   }
 
-  for (int i = 1; i <= 1; i++) {
+  for (int i = 1; i <= 10; i++) {
 
     int result = readSudokusFromCSV(file, board, i, solution);
+
     if (result == -1) {
       printf("Could not read file %s\n", filename);
       return -1;
@@ -62,6 +58,10 @@ int main() {
     }
   }
   fclose(file);
+}
 
+int main() {
+  printf("Running test_csv()\n");
+  test_csv();
   return 0;
 }
