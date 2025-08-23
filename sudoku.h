@@ -1,5 +1,8 @@
 #include <stdint.h>
 #include <stdio.h>
+#ifndef VERBOSE
+#define printf(...) ;
+#endif
 
 #ifndef DEF_SUDOKU_FUNCTION
 #define DEF_SUDOKU_FUNCTION
