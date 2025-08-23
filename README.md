@@ -1,3 +1,3 @@
-# sudoku-resolver
+# sudoku-solver
 
 Working...

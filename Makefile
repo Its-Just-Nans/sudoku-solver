@@ -1,4 +1,4 @@
-OUTPUT_NAME= main.out
+OUTPUT_NAME=main.out
 CFLAGS= -Wall
 CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -DVERBOSE -fstack-usage
 FILES= main.c sudoku.c
@@ -16,6 +16,9 @@ run :
 	./$(OUTPUT_NAME)
 
 tests:
-	cd tests && gcc -o test test.c  ../sudoku.c && ./test
+	$(MAKE) -C tests
+
+tests-debug:
+	$(MAKE) -C tests debug
 
 .PHONY: tests

@@ -1,67 +1,47 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#ifndef VERBOSE
-#define printf(...) ;
-#endif
+// #ifndef VERBOSE
+// #define printf(...) ;
+// #endif
 #include "sudoku.h"
 
 int main() {
   // Sample Sudoku puzzle (0 represents empty cells)
-  int board[N][N] = {{0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
-                     {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
-                     {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
-                     {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
-                     {0, 0, 0, 0, 0, 0, 0, 0, 0}};
-
-  int solution[N][N] = {
-      {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
-      {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
-      {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
-      {0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0},
-      {0, 0, 0, 0, 0, 0, 0, 0, 0}};
+  sudoku_t board;
+  sudoku_empty_grid(board);
+  sudoku_t solution_board;
+  sudoku_empty_grid(solution_board);
 
   // parse the CSV file
   const char *filename = "./tests/sudoku.csv";
 
-  FILE *file = fopen(filename, "r");
+  for (int num_puzzle = 1; num_puzzle <= 1; num_puzzle++) {
 
-  if (file == NULL) {
-    printf("Could not open file %s\n", filename);
-    return -1;
-  }
-
-  { // read first line of file
-    char line[1024];
-    if (fgets(line, sizeof(line), file) == NULL) {
-      printf("Could not read first line \n");
-      return -1;
-    }
-  }
-
-  for (int i = 1; i <= 1; i++) {
-
-    int result = readSudokusFromCSV(file, board, i, solution);
-    if (result == -1) {
+    uint8_t result =
+        readSudokusFromCSV(filename, board, num_puzzle, solution_board);
+    if (result != SUCCESS) {
       printf("Could not read file %s\n", filename);
-      return -1;
+      return 1;
     }
+    sudoku_print_board(board);
+    printf("---\n");
 
-    if (solveSudoku(board)) {
-      if (checkSudoku(board, solution)) {
-        printf("Solution %d is correct!\n", i);
-      } else {
-        printf("Solution %d is incorrect!\n", i);
-        printBoard(board);
-        printf("\n");
-        printBoard(solution);
-      }
-    } else {
-      printf("No solution %d exists!\n", i);
+    if (solve_sudoku(board) == ERR) {
+      printf("No solution %d exists!\n", num_puzzle);
       exit(1);
     }
+    if (!sudoku_is_valid_solved(board) ||
+        sudoku_compare_grids(board, solution_board) != SUCCESS) {
+      printf("Solution %d is incorrect!\n", num_puzzle);
+      sudoku_print_board(board);
+      printf("\n");
+      sudoku_print_board(solution_board);
+      return 1;
+    }
+    sudoku_print_board(board);
+    printf("---\n");
+    printf("Solution %d is correct!\n", num_puzzle);
   }
-  fclose(file);
-
   return 0;
 }

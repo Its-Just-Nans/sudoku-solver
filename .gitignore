@@ -1,3 +1,4 @@
-tests/test
+.vscode/
 
+tests/test.out
 main.out*
