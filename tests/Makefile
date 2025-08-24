@@ -1,5 +1,5 @@
 FILE_OUT=test.out
-CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -DVERBOSE -fstack-usage -pedantic -Wall -Wextra -Wcast-qual -Wcast-align -Wconversion
+CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -DSUDOKU_VERBOSE -fstack-usage -pedantic -Wall -Wextra -Wcast-qual -Wcast-align -Wconversion
 
 all: build run
 

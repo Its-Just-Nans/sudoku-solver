@@ -1,19 +1,31 @@
-OUTPUT_NAME=main.out
-CFLAGS= -Wall
-CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -DVERBOSE -fstack-usage -pedantic -Wall -Wextra -Wcast-qual -Wcast-align -Wconversion
-FILES= main.c sudoku.c
+CC     = gcc
+CFLAGS= -Wall -DSUDOKU_VERBOSE
 
-all: compile run
+CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -fstack-usage -pedantic -Wall -Wextra -Wcast-qual -Wcast-align -Wconversion
 
-compile:
-	gcc $(CFLAGS) $(FILES) -o $(OUTPUT_NAME)
+LIB    = libsudoku.a
+EXE    = main.out
+
+LIB_SRC  = sudoku.c
+LIB_OBJ  = $(LIB_SRC:.c=.o)
+MAIN_SRC = main.c
+MAIN_OBJ = $(MAIN_SRC:.c=.o)
+
+
+all: $(EXE) run
+
+$(LIB): $(LIB_OBJ)
+	ar rcs $@ $^
+
+$(EXE): $(MAIN_OBJ) $(LIB)
+	$(CC) $(CFLAGS) -o $@ $(MAIN_OBJ) -L. -lsudoku
+
+run: $(EXE)
+	./$(EXE)
 
 debug:
-	gcc $(CFLAGS_DEBUG) $(FILES) -o $(OUTPUT_NAME)
-	valgrind ./$(OUTPUT_NAME)
-
-run :
-	./$(OUTPUT_NAME)
+	$(CC) $(CFLAGS_DEBUG) -o $@ $(MAIN_OBJ) -L. -lsudoku -o $(EXE)
+	valgrind ./$(EXE)
 
 tests:
 	$(MAKE) -C tests

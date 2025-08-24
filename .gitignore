@@ -2,3 +2,5 @@
 
 tests/test.out*
 main.out*
+*.a
+*.o

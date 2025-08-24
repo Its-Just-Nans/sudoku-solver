@@ -5,30 +5,30 @@
 
 int test_csv() {
   sudoku_t board;
-  sudoku_empty_grid(board);
+  sudoku_empty_grid(&board);
   sudoku_t solution;
-  sudoku_empty_grid(solution);
+  sudoku_empty_grid(&solution);
 
   const char *filename = "sudoku.csv";
 
   for (unsigned int i = 1; i <= 10; i++) {
 
-    int result = readSudokusFromCSV(filename, board, i, solution);
+    int result = readSudokusFromCSV(filename, &board, i, &solution);
 
     if (result == -1) {
       printf("Could not read file %s\n", filename);
       return -1;
     }
 
-    if (!solve_sudoku(board)) {
+    if (!solve_sudoku(&board)) {
       printf("ERROR: No solution %d exists!\n", i);
       exit(1);
     }
-    if (!sudoku_compare_grids(board, solution)) {
+    if (!sudoku_compare_grids(&board, &solution)) {
       printf("ERROR: Solution %d is incorrect!\n", i);
-      sudoku_print_board(board);
+      sudoku_print(&board);
       printf("\n");
-      sudoku_print_board(solution);
+      sudoku_print(&solution);
       exit(-1);
     }
     printf("Test passed: Solution %d is correct!\n", i);
@@ -39,11 +39,11 @@ int test_csv() {
 int test_read_csv(const char *filename, const char *solution_line,
                   bool should_read_res, bool should_res) {
   sudoku_t board;
-  sudoku_empty_grid(board);
+  sudoku_empty_grid(&board);
   sudoku_t solution;
-  sudoku_from_line(solution, solution_line);
+  sudoku_from_line(&solution, solution_line);
 
-  bool read_re = read_sudoku(filename, board);
+  bool read_re = read_sudoku(filename, &board);
   if (!read_re) {
     if (read_re == should_read_res) {
       printf("Test passed for %s - could not read file\n", filename);
@@ -52,12 +52,12 @@ int test_read_csv(const char *filename, const char *solution_line,
     printf("ERROR: Could not read file %s\n", filename);
     return -1;
   }
-  bool res = sudoku_compare_grids(board, solution);
+  bool res = sudoku_compare_grids(&board, &solution);
   if (should_res != res) {
     printf("ERROR: Test %s(\"%s\") failed\n", __func__, filename);
-    sudoku_print_board(board);
+    sudoku_print(&board);
     printf("\n");
-    sudoku_print_board(solution);
+    sudoku_print(&solution);
     exit(1);
     return -1;
   }
@@ -67,15 +67,15 @@ int test_read_csv(const char *filename, const char *solution_line,
 
 int test_void_sudoku() {
   sudoku_t board;
-  sudoku_empty_grid(board);
+  sudoku_empty_grid(&board);
 
-  if (!solve_sudoku(board)) {
+  if (!solve_sudoku(&board)) {
     printf("Cannot solve %s()\n", __func__);
     exit(1);
   }
-  if (!sudoku_is_valid_solved(board)) {
+  if (!sudoku_is_valid_solved(&board)) {
     printf("Test %s() failed\n", __func__);
-    sudoku_print_board(board);
+    sudoku_print(&board);
     exit(1);
   }
   printf("Test passed for %s()\n", __func__);
