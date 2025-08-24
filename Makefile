@@ -1,6 +1,6 @@
 OUTPUT_NAME=main.out
 CFLAGS= -Wall
-CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -DVERBOSE -fstack-usage
+CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -DVERBOSE -fstack-usage -pedantic -Wall -Wextra -Wcast-qual -Wcast-align -Wconversion
 FILES= main.c sudoku.c
 
 all: compile run

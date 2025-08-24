@@ -1,4 +1,4 @@
 .vscode/
 
-tests/test.out
+tests/test.out*
 main.out*

@@ -16,23 +16,23 @@ int main() {
   // parse the CSV file
   const char *filename = "./tests/sudoku.csv";
 
-  for (int num_puzzle = 1; num_puzzle <= 1; num_puzzle++) {
+  for (unsigned int num_puzzle = 1; num_puzzle <= 1; num_puzzle++) {
 
     uint8_t result =
         readSudokusFromCSV(filename, board, num_puzzle, solution_board);
-    if (result != SUCCESS) {
+    if (!result) {
       printf("Could not read file %s\n", filename);
       return 1;
     }
     sudoku_print_board(board);
     printf("---\n");
 
-    if (solve_sudoku(board) == ERR) {
+    if (!solve_sudoku(board)) {
       printf("No solution %d exists!\n", num_puzzle);
       exit(1);
     }
     if (!sudoku_is_valid_solved(board) ||
-        sudoku_compare_grids(board, solution_board) != SUCCESS) {
+        !sudoku_compare_grids(board, solution_board)) {
       printf("Solution %d is incorrect!\n", num_puzzle);
       sudoku_print_board(board);
       printf("\n");

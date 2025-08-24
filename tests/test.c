@@ -3,16 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-uint8_t skipFirstLine(FILE *file) {
-  char temp[2] = "\0\0";
-  while (fgets(temp, 2, file) != NULL) {
-    if (temp[0] == '\n') {
-      return ERR;
-    }
-  }
-  return SUCCESS;
-}
-
 int test_csv() {
   sudoku_t board;
   sudoku_empty_grid(board);
@@ -21,7 +11,7 @@ int test_csv() {
 
   const char *filename = "sudoku.csv";
 
-  for (int i = 1; i <= 10; i++) {
+  for (unsigned int i = 1; i <= 10; i++) {
 
     int result = readSudokusFromCSV(filename, board, i, solution);
 
@@ -30,42 +20,41 @@ int test_csv() {
       return -1;
     }
 
-    if (solve_sudoku(board) == SUCCESS) {
-      if (sudoku_compare_grids(board, solution) == SUCCESS) {
-        printf("Solution %d is correct!\n", i);
-      } else {
-        printf("Solution %d is incorrect!\n", i);
-        sudoku_print_board(board);
-        printf("\n");
-        sudoku_print_board(solution);
-      }
-    } else {
-      printf("No solution %d exists!\n", i);
+    if (!solve_sudoku(board)) {
+      printf("ERROR: No solution %d exists!\n", i);
       exit(1);
     }
+    if (!sudoku_compare_grids(board, solution)) {
+      printf("ERROR: Solution %d is incorrect!\n", i);
+      sudoku_print_board(board);
+      printf("\n");
+      sudoku_print_board(solution);
+      exit(-1);
+    }
+    printf("Test passed: Solution %d is correct!\n", i);
   }
   return 0;
 }
 
 int test_read_csv(const char *filename, const char *solution_line,
-                  int should_res) {
+                  bool should_read_res, bool should_res) {
   sudoku_t board;
   sudoku_empty_grid(board);
   sudoku_t solution;
   sudoku_from_line(solution, solution_line);
 
-  int res_read = read_sudoku(filename, board);
-  if (res_read) {
-    if (should_res == -1) {
+  bool read_re = read_sudoku(filename, board);
+  if (!read_re) {
+    if (read_re == should_read_res) {
       printf("Test passed for %s - could not read file\n", filename);
       return 0;
     }
-    printf("Could not read file %s\n", filename);
+    printf("ERROR: Could not read file %s\n", filename);
     return -1;
   }
-  int res = sudoku_compare_grids(board, solution);
+  bool res = sudoku_compare_grids(board, solution);
   if (should_res != res) {
-    printf("Test readSudoku(\"%s\") failed\n", filename);
+    printf("ERROR: Test %s(\"%s\") failed\n", __func__, filename);
     sudoku_print_board(board);
     printf("\n");
     sudoku_print_board(solution);
@@ -80,7 +69,7 @@ int test_void_sudoku() {
   sudoku_t board;
   sudoku_empty_grid(board);
 
-  if (solve_sudoku(board) != SUCCESS) {
+  if (!solve_sudoku(board)) {
     printf("Cannot solve %s()\n", __func__);
     exit(1);
   }
@@ -94,20 +83,20 @@ int test_void_sudoku() {
 }
 
 int main() {
-  printf("Running test_csv()\n");
   test_csv();
-  printf("Running test_read_csv()\n");
   const char *solution_line = "5......94..9....5..4....2...2.5..8....4..1.7.8.."
                               ".3...6..2..7.1..3.9.....6...4...8";
-  test_read_csv("sudoku.txt", solution_line, 0);
-  test_read_csv("sudoku_single_line.txt", solution_line, 0);
-  test_read_csv("sudoku_single_line_nospace.txt", solution_line, 0);
-  test_read_csv("sudoku_with_chars.txt", solution_line, 0);
-  test_read_csv("sudoku_with_chars_2.txt", solution_line, 0);
+  test_read_csv("sudoku.txt", solution_line, true, true);
+  test_read_csv("sudoku_single_line.txt", solution_line, true, true);
+  test_read_csv("sudoku_single_line_nospace.txt", solution_line, true, true);
+  test_read_csv("sudoku_with_chars.txt", solution_line, true, true);
+  test_read_csv("sudoku_with_chars_2.txt", solution_line, true, true);
   // should fail
-  test_read_csv("sudoku_with_chars_missing_bug.txt", solution_line, -1);
-  test_read_csv("sudoku_with_chars_missing_random_bug.txt", solution_line, -1);
-  test_read_csv("sudoku_megaline_bug.txt", solution_line, -1);
+  test_read_csv("sudoku_with_chars_missing_bug.txt", solution_line, false,
+                false);
+  test_read_csv("sudoku_with_chars_missing_random_bug.txt", solution_line,
+                false, false);
+  test_read_csv("sudoku_megaline_bug.txt", solution_line, false, false);
 
   test_void_sudoku();
   return 0;

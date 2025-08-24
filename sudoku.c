@@ -1,10 +1,40 @@
 
 #include "sudoku.h"
 
-uint8_t char_to_num(const char temp) { return temp - '0'; }
+inline static uint8_t char_to_num(const char temp) {
+  return (uint8_t)(temp - '0');
+}
 
-uint8_t char_is_number(const char number) {
-  return (number >= '0' && number <= '9') ? 1 : 0;
+inline static uint8_t char_is_number(const char charac) {
+  return (charac >= '0' && charac <= '9') ? 1 : 0;
+}
+
+inline static uint8_t sudoku_get_number(sudoku_t sudoku, uint8_t row,
+                                        uint8_t col) {
+  return sudoku[row][col];
+}
+
+inline static void sudoku_set_number(sudoku_t sudoku, uint8_t row, uint8_t col,
+                                     uint8_t value) {
+  sudoku[row][col] = value;
+}
+
+/// | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 |
+/// |:-------------:|:---------------------------------------------------:|
+/// |   number 0-9  |              bit flags of possibility               |
+inline static uint8_t sudoku_get_number_b(sudoku_big_t sudoku, uint8_t row,
+                                          uint8_t col) {
+  uint16_t temp = sudoku[row][col] << 12;
+  return (uint8_t)(temp >> 12);
+  // return (uint8_t)(sudoku[row][col] & 0xF);
+}
+
+inline static void sudoku_set_number_b(sudoku_big_t sudoku, uint8_t row,
+                                       uint8_t col, uint8_t value) {
+  uint16_t temp = sudoku[row][col] >> 4;
+  temp = temp << 4; // remove the old number
+  sudoku[row][col] = temp + value;
+  // sudoku[row][col] = (sudoku[row][col] & 0xFFF0) | (value & 0xF);
 }
 
 // Function to print the Sudoku board
@@ -23,14 +53,14 @@ uint8_t sudoku_is_place_safe(sudoku_t board, uint8_t row, uint8_t col,
   // Check if the number exists in the col
   for (uint8_t col_num = 0; col_num < N; col_num++) {
     if (sudoku_get_number(board, row, col_num) == num) {
-      return ERR;
+      return false;
     }
   }
 
   // Check if the number exists in the row
   for (uint8_t row_num = 0; row_num < N; row_num++) {
     if (sudoku_get_number(board, row_num, col) == num) {
-      return ERR;
+      return false;
     }
   }
 
@@ -40,49 +70,48 @@ uint8_t sudoku_is_place_safe(sudoku_t board, uint8_t row, uint8_t col,
   for (uint8_t i = 0; i < 3; i++) {
     for (uint8_t j = 0; j < 3; j++) {
       if (sudoku_get_number(board, i + startRow, j + startCol) == num) {
-        return ERR;
+        return false;
       }
     }
   }
 
-  return SUCCESS;
+  return true;
 }
 
-uint8_t sudoku_is_solved(sudoku_t board, uint8_t *row, uint8_t *col) {
+bool sudoku_is_solved(sudoku_t board, uint8_t *row, uint8_t *col) {
   for (*row = 0; (*row) < N; (*row)++) {
     for (*col = 0; (*col) < N; (*col)++) {
       if (sudoku_get_number(board, *row, *col) == 0) {
-        return ERR;
+        return false;
       }
     }
   }
-  return SUCCESS;
+  return true;
 }
 
 // Backtracking function to solve the Sudoku
-uint8_t solve_sudoku(sudoku_t board) {
+bool solve_sudoku(sudoku_t board) {
   uint8_t row, col;
 
-  if (sudoku_is_solved(board, &row, &col) == SUCCESS) {
-    return SUCCESS;
+  if (sudoku_is_solved(board, &row, &col)) {
+    return true;
   }
 
   // Try numbers 1 to 9 for the empty cell
   for (uint8_t num = 1; num <= N; num++) {
-    if (sudoku_is_place_safe(board, row, col, num) == SUCCESS) {
+    if (sudoku_is_place_safe(board, row, col, num)) {
       sudoku_set_number(board, row, col, num);
 
       // Recursively attempt to solve with the current number
-      if (solve_sudoku(board) == SUCCESS) {
-        return SUCCESS;
+      if (solve_sudoku(board) == true) {
+        return true;
       }
 
       // If placing num doesn't lead to a solution, backtrack
       sudoku_set_number(board, row, col, 0);
     }
   }
-
-  return ERR;
+  return false;
 }
 void get_splitted(const char *line, int idx, char *res) {
   int i = 0;
@@ -113,17 +142,17 @@ void get_splitted(const char *line, int idx, char *res) {
   res[j] = '\0';
 }
 
-uint8_t readSudokusFromCSV(const char *filename, sudoku_t board,
-                           unsigned int num_puzzle, sudoku_t solution) {
+bool readSudokusFromCSV(const char *filename, sudoku_t board,
+                        unsigned int num_puzzle, sudoku_t solution) {
   FILE *file = fopen(filename, "r");
 
   if (file == NULL) {
     printf("Could not open file %s\n", filename);
-    return ERR_FILE;
+    return false;
   }
   char line[1024];
   char temp[N * N + 1];
-  int puzzle_index = 0;
+  unsigned int puzzle_index = 0;
 
   while (fgets(line, sizeof(line), file) != NULL) {
     if (puzzle_index != num_puzzle) {
@@ -132,85 +161,51 @@ uint8_t readSudokusFromCSV(const char *filename, sudoku_t board,
     }
     if (puzzle_index > num_puzzle) {
       printf("Could not read line %d\n", num_puzzle);
-      return ERR;
+      return false;
     }
-
-    // Read the line (excluding the ID) and parse the puzzle
-    uint8_t num;
-    int i = 0;
     // Skip the ID (first token)
     get_splitted(line, 1, temp);
-
     // Read puzzle into the 2D array
-    while (temp[i] != '\0' && i < N * N) {
-      if (temp[i] == '.') {
-        num = 0;
-      } else {
-        if (!char_is_number(temp[i])) {
-          return ERR;
-        }
-        num = char_to_num(temp[i]);
-      }
-      sudoku_set_number(board, i / N, i % N, num);
-      i++;
-    }
+    sudoku_from_line(board, temp);
     get_splitted(line, 2, temp);
-
     // Read the solution into the 2D array
-    if (solution != NULL) {
-      i = 0;
-      while (temp[i] != '\0' && i < N * N) {
-        if (temp[i] == '.') {
-          num = 0;
-        } else {
-          if (!char_is_number(temp[i])) {
-            return ERR;
-          }
-          num = char_to_num(temp[i]);
-        }
-        sudoku_set_number(solution, i / N, i % N, num);
-        i++;
-      }
-
-      puzzle_index++;
-    }
+    sudoku_from_line(solution, temp);
+    puzzle_index++;
     fclose(file);
-    return SUCCESS;
+    return true;
   }
   fclose(file);
   printf("Could not read file \n");
-  return ERR;
+  return false;
 }
 
-uint8_t sudoku_compare_grids(sudoku_t board, sudoku_t solution) {
+bool sudoku_compare_grids(sudoku_t board, sudoku_t solution) {
   for (uint8_t row = 0; row < N; row++) {
     for (uint8_t col = 0; col < N; col++) {
       if (sudoku_get_number(board, row, col) !=
           sudoku_get_number(solution, row, col)) {
-        return ERR;
+        return false;
       }
     }
   }
-  return SUCCESS;
+  return true;
 }
 
-#define type int
-
-uint8_t read_sudoku(const char *filename, sudoku_t sudoku) {
+bool read_sudoku(const char *filename, sudoku_t sudoku) {
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
     printf("Could not open file %s\n", filename);
-    return ERR_FILE;
+    return false;
   }
   char temp[2] = "\0\0";
-  type inserted = 81;
-  type max_col = N;
-  for (type line_number = 0; line_number < N;) {
-    for (type col_number = 0; col_number < max_col;) {
+  uint8_t inserted = 81;
+  uint8_t max_col = N;
+  for (uint8_t line_number = 0; line_number < N;) {
+    for (uint8_t col_number = 0; col_number < max_col;) {
       if (temp[0] == '\0') {
         if (fgets(temp, 2, file) == NULL) {
           fclose(file);
-          return ERR; // error or EOF
+          return false; // error or EOF
         }
       }
       if (char_is_number(temp[0])) {
@@ -227,7 +222,7 @@ uint8_t read_sudoku(const char *filename, sudoku_t sudoku) {
       if (max_col > 81) {
         // define a limit to avoid infinite loops
         fclose(file);
-        return ERR;
+        return false;
       }
       temp[0] = '\0';
     }
@@ -244,35 +239,23 @@ uint8_t read_sudoku(const char *filename, sudoku_t sudoku) {
     max_col = N;
   }
   fclose(file);
-  return SUCCESS;
+  return true;
 }
 
-uint8_t verifySudoku(sudoku_t board) {
+bool verifySudoku(sudoku_t board) {
   uint8_t row, col;
-  if (sudoku_is_solved(board, &row, &col) == SUCCESS) {
-    return SUCCESS;
-  }
-  return ERR;
-}
-
-uint8_t sudoku_get_number(sudoku_t sudoku, uint8_t row, uint8_t col) {
-  return sudoku[row][col];
-}
-
-uint8_t sudoku_set_number(sudoku_t sudoku, uint8_t row, uint8_t col,
-                          uint8_t value) {
-  return sudoku[row][col] = value;
+  return sudoku_is_solved(board, &row, &col);
 }
 
 void sudoku_empty_grid(sudoku_t sudoku) {
-  for (int row = 0; row < N; row++) {
-    for (int col = 0; col < N; col++) {
+  for (uint8_t row = 0; row < N; row++) {
+    for (uint8_t col = 0; col < N; col++) {
       sudoku_set_number(sudoku, row, col, 0);
     }
   }
 }
 
-int sudoku_is_valid_solved(sudoku_t sudoku) {
+bool sudoku_is_valid_solved(sudoku_t sudoku) {
   int seen[10]; // index 1-9 used
 
   // Check rows
@@ -306,12 +289,13 @@ int sudoku_is_valid_solved(sudoku_t sudoku) {
   // Check 3x3 subgrids
   for (uint8_t boxRow = 0; boxRow < 3; boxRow++) {
     for (uint8_t boxCol = 0; boxCol < 3; boxCol++) {
-      for (int i = 1; i <= 9; i++)
+      for (uint8_t i = 1; i <= 9; i++)
         seen[i] = 0;
       for (uint8_t r = 0; r < 3; r++) {
         for (uint8_t c = 0; c < 3; c++) {
-          uint8_t num =
-              sudoku_get_number(sudoku, boxRow * 3 + r, boxCol * 3 + c);
+          uint8_t row_num = (uint8_t)(boxRow * 3 + r);
+          uint8_t col_num = (uint8_t)(boxCol * 3 + c);
+          uint8_t num = sudoku_get_number(sudoku, row_num, col_num);
           if (num == 0)
             continue;
           if (num > 9 || seen[num])
@@ -325,26 +309,45 @@ int sudoku_is_valid_solved(sudoku_t sudoku) {
   return 1; // valid Sudoku
 }
 
-int sudoku_from_line(sudoku_t sudoku, const char *line) {
+bool sudoku_from_line(sudoku_t sudoku, const char *line) {
   if (line == NULL) {
-    return ERR;
+    return false;
   }
   size_t pos = 0;
 
   for (uint8_t row = 0; row < 9; row++) {
     for (uint8_t col = 0; col < 9; col++) {
       char ch = line[pos++];
-      uint8_t value = 0;
+      uint8_t num = 0;
 
-      if (ch >= '1' && ch <= '9')
-        value = (uint8_t)(ch - '0');
-      else if (ch == '.')
-        value = 0;
-      else
-        return ERR;
+      if (ch == '.') {
+        num = 0;
+      } else if (char_is_number(ch)) {
+        num = char_to_num(ch);
+      } else {
+        return false;
+      }
 
-      sudoku_set_number(sudoku, row, col, value);
+      sudoku_set_number(sudoku, row, col, num);
     }
   }
-  return SUCCESS;
+  return true;
+}
+
+void sudoku_to_big(sudoku_t sudoku, sudoku_big_t sudoku_big) {
+  for (uint8_t row = 0; row < 9; row++) {
+    for (uint8_t col = 0; col < 9; col++) {
+      sudoku_set_number_b(sudoku_big, row, col,
+                          sudoku_get_number(sudoku, row, col));
+    }
+  }
+}
+
+void sudoku_to_normal(sudoku_big_t sudoku_big, sudoku_t sudoku) {
+  for (uint8_t row = 0; row < 9; row++) {
+    for (uint8_t col = 0; col < 9; col++) {
+      sudoku_set_number(sudoku, row, col,
+                        sudoku_get_number_b(sudoku_big, row, col));
+    }
+  }
 }
