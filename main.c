@@ -16,7 +16,7 @@ int main() {
   for (unsigned int num_puzzle = 1; num_puzzle <= 1; num_puzzle++) {
 
     uint8_t result =
-        readSudokusFromCSV(filename, &board, num_puzzle, &solution_board);
+        sudoku_read_from_csv(filename, &board, num_puzzle, &solution_board);
     if (!result) {
       printf("Could not read file %s\n", filename);
       return 1;
@@ -24,7 +24,7 @@ int main() {
     sudoku_print(&board);
     printf("---\n");
 
-    if (!solve_sudoku(&board)) {
+    if (!sudoku_solve(&board)) {
       printf("No solution %d exists!\n", num_puzzle);
       exit(1);
     }
