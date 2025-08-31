@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 #ifdef SUDOKU_VERBOSE
-#define SUDOKU_LOG(fmt, ...) printf(fmt, ##__VA_ARGS__)
+#define SUDOKU_LOG(fmt, ...) printf("SUDOKU_LOG: " fmt, ##__VA_ARGS__)
 #else
 #define SUDOKU_LOG(fmt, ...) ((void)0)
 #endif
@@ -60,6 +60,23 @@ EXPOSED void sudoku_remove_number_hint(sudoku_big_t *sudoku, uint8_t row,
     return;
   }
   sudoku->_grid[row][col] &= ~(uint16_t)(1 << (hint + 3));
+}
+
+EXPOSED bool sudoku_get_only_number_hint(sudoku_big_t *sudoku, uint8_t row,
+                                         uint8_t col, uint8_t num) {
+  if (num < 1 || num > 9)
+    return false;
+
+  uint16_t cell = sudoku->_grid[row][col];
+
+  // extract only hint bits (bits 4–12)
+  uint16_t hints = cell & 0x1FF0;
+
+  // check if exactly one bit set
+  if (hints == (1u << (num + 3))) {
+    return true;
+  }
+  return false;
 }
 
 EXPOSED void sudoku_set_number_b(sudoku_big_t *sudoku, uint8_t row, uint8_t col,
@@ -134,7 +151,7 @@ bool sudoku_is_solved(sudoku_t *sudoku, uint8_t *row, uint8_t *col) {
 }
 
 // Backtracking function to solve the Sudoku
-bool sudoku_solve(sudoku_t *sudoku) {
+bool sudoku_solve_recursive(sudoku_t *sudoku) {
   uint8_t row, col;
 
   if (sudoku_is_solved(sudoku, &row, &col)) {
@@ -147,7 +164,7 @@ bool sudoku_solve(sudoku_t *sudoku) {
       sudoku_set_number(sudoku, row, col, num);
 
       // Recursively attempt to solve with the current number
-      if (sudoku_solve(sudoku) == true) {
+      if (sudoku_solve_recursive(sudoku) == true) {
         return true;
       }
 
@@ -211,56 +228,60 @@ bool sudoku_solve_iterative_limit(sudoku_t *sudoku, int max_iter) {
   return (idx == empty_count); // solved if we placed all successfully
 }
 
-// bool sudoku_solve_iterative_limit_b(sudoku_big_t *sudoku, int max_iter) {
-//   uint8_t row = 0, col = 0;
+bool sudoku_solve_iterative_limit_b(sudoku_big_t *sudoku, int max_iter) {
+  uint8_t row = 0, col = 0;
 
-//   // Flatten empty cells into a list for easier navigation
-//   uint8_t empty_cells[N * N][2];
-//   uint8_t empty_count = 0;
+  // Flatten empty cells into a list for easier navigation
+  uint8_t empty_cells[N * N][2];
+  uint8_t empty_count = 0;
 
-//   for (row = 0; row < N; row++) {
-//     for (col = 0; col < N; col++) {
-//       uint8_t num = sudoku_get_number_b(sudoku, row, col);
-//       if (num == 0) {
-//         empty_cells[empty_count][0] = row;
-//         empty_cells[empty_count][1] = col;
-//         empty_count++;
-//       }
-//     }
-//   }
-//   int nb_iter = 0;
-//   int idx = 0; // index in empty_cells[]
-//   while (idx >= 0 && idx < empty_count) {
-//     row = empty_cells[idx][0];
-//     col = empty_cells[idx][1];
-//     uint8_t placed = sudoku_get_number_b(sudoku, row, col);
-//     bool found = false;
+  for (row = 0; row < N; row++) {
+    for (col = 0; col < N; col++) {
+      uint8_t num = sudoku_get_number_b(sudoku, row, col);
+      if (num == 0) {
+        empty_cells[empty_count][0] = row;
+        empty_cells[empty_count][1] = col;
+        empty_count++;
+      }
+    }
+  }
+  bool force = false;
+  int nb_iter = 0;
+  int idx = 0; // index in empty_cells[]
+  while (idx >= 0 && idx < empty_count) {
+    row = empty_cells[idx][0];
+    col = empty_cells[idx][1];
+    uint8_t placed = sudoku_get_number_b(sudoku, row, col);
+    bool found = false;
 
-//     // Try next number after the last tried
-//     for (uint8_t num = placed + 1; num <= N; num++) {
-//       if (sudoku_is_place_safe_b(sudoku, row, col, num)) {
-//         sudoku_set_number_b(sudoku, row, col, num);
-//         found = true;
-//         break;
-//       }
-//     }
+    // Try next number after the last tried
+    for (uint8_t num = placed + 1; num <= N; num++) {
+      if (sudoku_get_only_number_hint(sudoku, row, col, num)) {
+        sudoku_set_number_b(sudoku, row, col, num);
+        found = true;
+        break;
+      } else if (force && sudoku_get_number_hint(sudoku, row, col, num)) {
+        found = true;
+        break;
+      }
+    }
 
-//     if (found) {
-//       // Move forward
-//       idx++;
-//     } else {
-//       // Reset and backtrack
-//       sudoku_set_number_b(sudoku, row, col, 0);
-//       idx--;
-//     }
-//     if (nb_iter++ > max_iter) {
-//       break;
-//     }
-//   }
-//   return (idx == empty_count); // solved if we placed all successfully
-// }
+    if (found) {
+      // Move forward
+      idx++;
+    } else {
+      // Reset and backtrack
+      sudoku_set_number_b(sudoku, row, col, 0);
+      idx--;
+    }
+    if (nb_iter++ > max_iter) {
+      break;
+    }
+  }
+  return (idx == empty_count); // solved if we placed all successfully
+}
 
-void get_splitted(const char *line, int idx, char *res) {
+void get_split(const char *line, int idx, char *res) {
   int i = 0;
   int j = 0;
   int comma_count = 0;
@@ -311,10 +332,10 @@ bool sudoku_read_from_csv(const char *filename, sudoku_t *sudoku,
       return false;
     }
     // Skip the ID (first token)
-    get_splitted(line, 1, temp);
+    get_split(line, 1, temp);
     // Read puzzle into the 2D array
     sudoku_from_line(sudoku, temp);
-    get_splitted(line, 2, temp);
+    get_split(line, 2, temp);
     // Read the solution into the 2D array
     sudoku_from_line(solution, temp);
     puzzle_index++;
@@ -396,7 +417,7 @@ bool sudoku_verify(sudoku_t *sudoku) {
   if (!sudoku_is_solved(sudoku, &row, &col)) {
     return false;
   }
-  // todo cehck numbers
+  // todo check numbers
   return true;
 }
 

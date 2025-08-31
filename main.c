@@ -24,7 +24,7 @@ int main() {
     sudoku_print(&board);
     printf("---\n");
 
-    if (!sudoku_solve(&board)) {
+    if (!sudoku_solve_recursive(&board)) {
       printf("No solution %d exists!\n", num_puzzle);
       exit(1);
     }

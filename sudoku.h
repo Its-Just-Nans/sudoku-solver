@@ -29,7 +29,7 @@ void sudoku_set_number(sudoku_t *sudoku, uint8_t row, uint8_t col,
 void sudoku_print(sudoku_t *sudoku);
 uint8_t sudoku_is_place_safe(sudoku_t *sudoku, uint8_t row, uint8_t col,
                              uint8_t num);
-bool sudoku_solve(sudoku_t *sudoku);
+bool sudoku_solve_recursive(sudoku_t *sudoku);
 bool sudoku_solve_iterative_limit(sudoku_t *sudoku, int max_iter);
 bool sudoku_solve_iterative(sudoku_t *sudoku);
 bool sudoku_read_from_csv(const char *filename, sudoku_t *sudoku,
@@ -55,6 +55,8 @@ void sudoku_set_number_hint(sudoku_big_t *sudoku, uint8_t row, uint8_t col,
                             uint8_t hint);
 void sudoku_remove_number_hint(sudoku_big_t *sudoku, uint8_t row, uint8_t col,
                                uint8_t hint);
+bool sudoku_get_only_number_hint(sudoku_big_t *sudoku, uint8_t row, uint8_t col,
+                                 uint8_t num);
 #endif /* SUDOKU_ALLOW_PRIVATE */
 #endif /* SUDOKU_BIG */
 #endif /* DEF_SUDOKU_FUNCTION */
