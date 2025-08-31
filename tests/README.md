@@ -2,5 +2,6 @@
 
 ```sh
 cd tests
-gcc -o test test.c  ../sudoku.c && ./test
+make
+make debug
 ```

@@ -438,33 +438,33 @@ void sudoku_empty_grid_b(sudoku_big_t *sudoku) {
 }
 
 bool sudoku_is_valid_solved(sudoku_t *sudoku) {
-  int seen[10]; // index 1-9 used
+  bool seen[10]; // index 1-9 used
 
   // Check rows
   for (uint8_t row = 0; row < 9; row++) {
     for (int i = 1; i <= 9; i++)
-      seen[i] = 0;
+      seen[i] = false;
     for (uint8_t col = 0; col < 9; col++) {
       uint8_t num = sudoku_get_number(sudoku, row, col);
       if (num == 0)
         continue; // allow blanks
       if (num > 9 || seen[num])
         return 0;
-      seen[num] = 1;
+      seen[num] = true;
     }
   }
 
   // Check columns
   for (uint8_t col = 0; col < 9; col++) {
     for (int i = 1; i <= 9; i++)
-      seen[i] = 0;
+      seen[i] = false;
     for (uint8_t row = 0; row < 9; row++) {
       uint8_t num = sudoku_get_number(sudoku, row, col);
       if (num == 0)
         continue;
       if (num > 9 || seen[num])
         return 0;
-      seen[num] = 1;
+      seen[num] = true;
     }
   }
 
@@ -472,7 +472,7 @@ bool sudoku_is_valid_solved(sudoku_t *sudoku) {
   for (uint8_t boxRow = 0; boxRow < 3; boxRow++) {
     for (uint8_t boxCol = 0; boxCol < 3; boxCol++) {
       for (uint8_t i = 1; i <= 9; i++)
-        seen[i] = 0;
+        seen[i] = false;
       for (uint8_t r = 0; r < 3; r++) {
         for (uint8_t c = 0; c < 3; c++) {
           uint8_t row_num = (uint8_t)(boxRow * 3 + r);
@@ -482,7 +482,7 @@ bool sudoku_is_valid_solved(sudoku_t *sudoku) {
             continue;
           if (num > 9 || seen[num])
             return 0;
-          seen[num] = 1;
+          seen[num] = true;
         }
       }
     }

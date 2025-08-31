@@ -1,7 +1,15 @@
-CC     = gcc
+# sudoku solver makefile
 CFLAGS= -Wall -DSUDOKU_VERBOSE
 
-CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -fstack-usage -pedantic -Wall -Wextra -Wcast-qual -Wcast-align -Wconversion
+ifdef MUSL
+# make MUSL=1
+CC     = musl-gcc
+CFLAGS += -static
+else
+CC     = gcc
+endif
+
+CFLAGS_DEBUG= $(CFLAGS) -g -DDEBUG -fstack-usage -pedantic -Wextra -Wcast-qual -Wcast-align -Wconversion
 
 LIB    = libsudoku.a
 EXE    = main.out
@@ -23,7 +31,7 @@ $(EXE): $(MAIN_OBJ) $(LIB)
 run: $(EXE)
 	./$(EXE)
 
-debug:
+debug: $(EXE)
 	$(CC) $(CFLAGS_DEBUG) -o $@ $(MAIN_OBJ) -L. -lsudoku -o $(EXE)
 	valgrind ./$(EXE)
 
@@ -32,5 +40,8 @@ tests:
 
 tests-debug:
 	$(MAKE) -C tests debug
+
+clean:
+	rm -f main.o main.out main*.su sudoku.o libsudoku.a
 
 .PHONY: tests

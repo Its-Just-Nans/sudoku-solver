@@ -45,6 +45,7 @@ bool sudoku_from_line(sudoku_t *sudoku, const char *line);
 void sudoku_empty_grid_b(sudoku_big_t *sudoku);
 void sudoku_to_big(sudoku_t *sudoku, sudoku_big_t *sudoku_big);
 void sudoku_to_normal(sudoku_big_t *sudoku_big, sudoku_t *sudoku);
+
 #ifdef SUDOKU_ALLOW_PRIVATE
 uint8_t sudoku_get_number_b(sudoku_big_t *sudoku, uint8_t row, uint8_t col);
 void sudoku_set_number_b(sudoku_big_t *sudoku, uint8_t row, uint8_t col,
@@ -58,5 +59,7 @@ void sudoku_remove_number_hint(sudoku_big_t *sudoku, uint8_t row, uint8_t col,
 bool sudoku_get_only_number_hint(sudoku_big_t *sudoku, uint8_t row, uint8_t col,
                                  uint8_t num);
 #endif /* SUDOKU_ALLOW_PRIVATE */
+
 #endif /* SUDOKU_BIG */
+
 #endif /* DEF_SUDOKU_FUNCTION */
