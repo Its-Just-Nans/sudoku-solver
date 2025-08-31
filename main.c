@@ -1,7 +1,6 @@
 #include "sudoku.h"
 #include <stdint.h>
 #include <stdio.h>
-#include <stdlib.h>
 
 int main() {
   // Sample Sudoku puzzle (0 represents empty cells)
@@ -26,7 +25,7 @@ int main() {
 
     if (!sudoku_solve_recursive(&board)) {
       printf("No solution %d exists!\n", num_puzzle);
-      exit(1);
+      return 1;
     }
     if (!sudoku_is_valid_solved(&board) ||
         !sudoku_compare_grids(&board, &solution_board)) {
